@@ -1,0 +1,13 @@
+apiVersion: v2
+name: demo_app-chart
+version: 1.0.0
+description: A Helm chart for Demo App
+type: application
+
+sources:
+  - https://github.com/RPotsel/demo-app/
+maintainers:
+  - name: Roman Potseluev
+    email: rpotsel@yandex.ru
+    url: https://github.com/RPotsel
+appVersion: 1.0.0

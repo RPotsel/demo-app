@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: demo-gowebserver
+spec:
+  selector:
+    matchLabels:
+      app: demo-gowebserver
+  replicas: {{ .Values.gowebserver.replicas }}
+  template:
+    metadata:
+      labels:
+        app: demo-gowebserver
+    spec:
+      containers:
+      - image: {{ .Values.gowebserver.repo }}/demo-app-gowebserver:{{ .Values.gowebserver.version }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        name: demo-gowebserver
+        env:
+        {{- range $key, $val := .Values.gowebserver.env }}
+        - name: {{ $val.name }}
+          value: {{ $val.value }}
+        {{- end }}

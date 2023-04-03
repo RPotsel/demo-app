@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: demo-gateway
+spec:
+  selector:
+    matchLabels:
+      app: demo-gateway
+  replicas: {{ .Values.gateway.replicas }}
+  template:
+    metadata:
+      labels:
+        app: demo-gateway
+    spec:
+      containers:
+      - image: {{ .Values.gateway.repo }}/demo-app-gateway:{{ .Values.gateway.version }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        name: demo-gateway
+        env:
+        {{- range $key, $val := .Values.gateway.env }}
+        - name: {{ $val.name }}
+          value: {{ $val.value }}
+        {{- end }}

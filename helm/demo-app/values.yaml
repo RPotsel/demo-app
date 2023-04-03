@@ -1,0 +1,31 @@
+# Default values for helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  imagePullPolicy: IfNotPresent
+
+gateway:
+  repo: rpot
+  version: latest
+  replicas: 1
+  env:
+  - name: SERVER_URL
+    value: gowebserver:8080
+  service:
+    type: NodePort
+    port: 8091
+
+gowebserver:
+  repo: rpot
+  version: latest
+  replicas: 3
+  env:
+  - name: WORKSPACE
+    value: TEST
+  service:
+    name: gowebserver
+
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  port: 8091

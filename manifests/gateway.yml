@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: demo-gateway
+spec:
+  selector:
+    matchLabels:
+      app: demo-gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-gateway
+    spec:
+      containers:
+      - image: rpot/demo-app-gateway:latest
+        imagePullPolicy: IfNotPresent
+        name: demo-gateway
+        env:
+        - name: SERVER_URL
+          value: gowebserver:8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-gateway-node-port
+  labels:
+    app: demo-gateway
+spec:
+  type: NodePort
+  ports:
+  - port: 8091
+    targetPort: 80
+  selector:
+    app: demo-gateway
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-gateway-ingress
+  # annotations:
+  #   # kubernetes.io/ingress.class: "nginx"
+  #   nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-gateway-node-port
+            port:
+              number: 8091

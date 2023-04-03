@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: demo-gowebserver
+spec:
+  selector:
+    matchLabels:
+      app: demo-gowebserver
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: demo-gowebserver
+    spec:
+      containers:
+      - image: rpot/demo-app-gowebserver:latest
+        imagePullPolicy: IfNotPresent
+        name: demo-gowebserver
+        env:
+        - name: WORKSPACE
+          value: TEST
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gowebserver
+  labels:
+    app: demo-gowebserver
+spec:
+  selector:
+    app: demo-gowebserver
+  type: ClusterIP
+  ports:
+  - name: backend
+    protocol: TCP
+    port: 8080
+    # targetPort: 8080
