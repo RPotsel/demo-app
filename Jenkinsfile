@@ -19,6 +19,7 @@ pipeline {
                 checkout scm
 
                 sh "ls -ltra"
+                sh "git rev-parse --abbrev-ref HEAD"
                 echo sh(script: 'env|sort', returnStdout: true)
             }
         }
@@ -27,6 +28,7 @@ pipeline {
                 branch 'main'
             }
             steps {
+                PrintStage()
                 script {
                     if (env.TAG_NAME) {
                         PrintStage("Triggered by the TAG: ${env.TAG_NAME}")
