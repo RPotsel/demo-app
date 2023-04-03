@@ -24,10 +24,9 @@ pipeline {
         }
         stage('Push Images') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
-                echo 'some steps here that should always be executed'
                 script {
                     if (env.TAG_NAME) {
                         PrintStage("Triggered by the TAG: ${env.TAG_NAME}")
