@@ -19,27 +19,27 @@ pipeline {
                 checkout scm
 
                 sh "ls -ltra"
-                sh "git rev-parse --abbrev-ref HEAD"
                 echo sh(script: 'env|sort', returnStdout: true)
             }
         }
-        stage('Push Images') {
+        stage('Deploy to STAGE') {
             when {
                 branch 'main'
             }
             steps {
                 PrintStage()
-                script {
-                    if (env.TAG_NAME) {
-                        PrintStage("Triggered by the TAG: ${env.TAG_NAME}")
-                        PushImageToRegistry('./gateway', "demo-app-gateway:${env.TAG_NAME}")
-                        PushImageToRegistry('./gowebserver', "demo-app-gowebserver:${env.TAG_NAME}")
-                    } else {
-                        PrintStage("Triggered by branch, PR or ...")
-                        PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
-                        PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
-                    }
-                }
+                PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
+                PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
+            }
+        }
+        stage('Deploy to PROD') {
+            when {
+                tag "v.*"
+            }
+            steps {
+                PrintStage()
+                PushImageToRegistry('./gateway', "demo-app-gateway:${env.TAG_NAME}")
+                PushImageToRegistry('./gowebserver', "demo-app-gowebserver:${env.TAG_NAME}")
             }
         }
     }
