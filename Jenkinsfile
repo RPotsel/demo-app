@@ -30,6 +30,9 @@ pipeline {
                 PrintStage()
                 PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
                 PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
+                withKubeConfig([credentialsId: 'KUBECONFIG_STAGE', namespace: 'demo-app']) {
+                    sh "helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1"
+                }
             }
         }
         stage('Deploy to PROD') {
