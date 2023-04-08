@@ -35,11 +35,12 @@ pipeline {
                 //     sh "kubectl get all -A"
                 // }
                 withCredentials([file(credentialsId: 'KUBECONFIG_STAGE', variable: 'config')]) {
-                sh """
-                    export KUBECONFIG=\${config}
-                    kubectl get all -A
-                    helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1 -n demo-app
-                """
+                    sh """
+                        export KUBECONFIG=\${config}
+                        kubectl get all -A
+                        helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1 -n demo-app
+                    """
+                }
             }
         }
         stage('Deploy to PROD') {
