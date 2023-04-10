@@ -11,7 +11,7 @@ pipeline {
     }
     environment {
         IMAGE_BASE = 'rpot'
-        EXAMPLE_KEY = credentials('KUBECONFIG_STAGE')
+        DEMO_APP_NAMESPACE = 'demo-app'
     }
     stages {
         stage('Checkout') {
@@ -32,11 +32,12 @@ pipeline {
                 // PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
                 // PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
 
-                withKubeConfig([credentialsId: 'KUBECONFIG_STAGE', namespace: 'demo-app']) {
+                withKubeConfig([credentialsId: 'STAGE_JENKINS_ROBOT_TOKEN', serverUrl: "${CLUSTER_URL}", namespace: "${DEMO_APP_NAMESPACE}"]) {
                     sh "helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1"
                     sh "kubectl get all -A"
                 }
 
+                // Use KUBECONFIG as secret file
                 // withCredentials([file(credentialsId: 'KUBECONFIG_STAGE', variable: 'config')]) {
                 //     sh """
                 //         export KUBECONFIG=\${config}
@@ -45,11 +46,6 @@ pipeline {
                 //     """
                 // }
 
-                // withCredentials([string(credentialsId: 'KUBECONFIG_STAGE', variable: 'SECRET')]) { //set SECRET with the credential content
-                //     echo "My secret text is '${SECRET}'"
-                // }
-
-                sh "echo ${SECRET}"
             }
         }
         stage('Deploy to PROD') {
