@@ -34,7 +34,7 @@ pipeline {
 
                 withKubeConfig([credentialsId: 'STAGE_JENKINS_ROBOT_TOKEN', serverUrl: "${CLUSTER_URL}", namespace: "${DEMO_APP_NAMESPACE}"]) {
                     sh "helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1"
-                    sh "kubectl get all -A"
+                    sh "kubectl get all"
                 }
 
                 // Use KUBECONFIG as secret file
