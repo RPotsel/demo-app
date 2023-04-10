@@ -49,7 +49,7 @@ pipeline {
                 //     echo "My secret text is '${SECRET}'"
                 // }
 
-                bat 'echo %EXAMPLE_KEY%'
+                sh('echo ${EXAMPLE_KEY}')
             }
         }
         stage('Deploy to PROD') {
