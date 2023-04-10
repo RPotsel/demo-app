@@ -11,6 +11,7 @@ pipeline {
     }
     environment {
         IMAGE_BASE = 'rpot'
+        EXAMPLE_KEY = credentials('KUBECONFIG_STAGE')
     }
     stages {
         stage('Checkout') {
@@ -43,9 +44,12 @@ pipeline {
                 //         helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1 -n demo-app
                 //     """
                 // }
-                withCredentials([string(credentialsId: 'KUBECONFIG_STAGE', variable: 'SECRET')]) { //set SECRET with the credential content
-                    echo "My secret text is '${SECRET}'"
-                }
+
+                // withCredentials([string(credentialsId: 'KUBECONFIG_STAGE', variable: 'SECRET')]) { //set SECRET with the credential content
+                //     echo "My secret text is '${SECRET}'"
+                // }
+
+                bat 'echo %EXAMPLE_KEY%'
             }
         }
         stage('Deploy to PROD') {
