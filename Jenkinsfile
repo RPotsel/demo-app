@@ -46,6 +46,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'KUBECONFIG_STAGE', variable: 'SECRET')]) { //set SECRET with the credential content
                     echo "My secret text is '${SECRET}'"
                 }
+            }
         }
         stage('Deploy to PROD') {
             when {
