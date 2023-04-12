@@ -29,23 +29,20 @@ pipeline {
             }
             steps {
                 PrintStage()
-                // PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
-                // PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
+                PushImageToRegistry('./gateway', 'demo-app-gateway:latest')
+                PushImageToRegistry('./gowebserver', 'demo-app-gowebserver:latest')
 
-                withKubeConfig([credentialsId: 'STAGE_JENKINS_ROBOT_TOKEN', serverUrl: "${CLUSTER_URL}", namespace: "${DEMO_APP_NAMESPACE}"]) {
-                    sh "helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1"
-                    sh "kubectl get all"
+                withKubeConfig([credentialsId: 'STAGE_JENKINS_ROBOT_TOKEN', 
+                                serverUrl: "${STAGE_CLUSTER_URL}", 
+                                namespace: "${DEMO_APP_NAMESPACE}"]) {
+                    sh """
+                        helm upgrade demo-app helm/demo-app/ --reuse-values \
+                            --set ingress.host=demo.stage.pinbit.ru \
+                            --set gowebserver.env[0].name=WORKSPACE \
+                            --set gowebserver.env[0].value=STAGE
+                        kubectl get all
+                    """
                 }
-
-                // Use KUBECONFIG as secret file
-                // withCredentials([file(credentialsId: 'KUBECONFIG_STAGE', variable: 'config')]) {
-                //     sh """
-                //         export KUBECONFIG=\${config}
-                //         kubectl get all -A
-                //         helm upgrade demo-app helm/demo-app/ --reuse-values --set ingress.host=demo.stage.pinbit.ru --set gowebserver.env[0].name=WORKSPACE --set gowebserver.env[0].value=STAGE1 -n demo-app
-                //     """
-                // }
-
             }
         }
         stage('Deploy to PROD') {
@@ -56,6 +53,18 @@ pipeline {
                 PrintStage()
                 PushImageToRegistry('./gateway', "demo-app-gateway:${env.TAG_NAME}")
                 PushImageToRegistry('./gowebserver', "demo-app-gowebserver:${env.TAG_NAME}")
+
+                withKubeConfig([credentialsId: 'PROD_JENKINS_ROBOT_TOKEN', 
+                                serverUrl: "${PROD_CLUSTER_URL}", 
+                                namespace: "${DEMO_APP_NAMESPACE}"]) {
+                    sh """
+                        helm upgrade demo-app helm/demo-app/ --reuse-values \
+                            --set ingress.host=demo.prod.pinbit.ru \
+                            --set gowebserver.env[0].name=WORKSPACE \
+                            --set gowebserver.env[0].value=PROD
+                        kubectl get all
+                    """
+                }
             }
         }
     }
