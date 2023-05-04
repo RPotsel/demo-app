@@ -59,7 +59,7 @@ pipeline {
                                 namespace: "${DEMO_APP_NAMESPACE}"]) {
                     sh """
                         helm upgrade demo-app helm/demo-app/ --reuse-values \
-                            --set ingress.host=demo.prod.pinbit.ru \
+                            --set ingress.host=demo.pinbit.ru \
                             --set gowebserver.env[0].name=WORKSPACE \
                             --set gowebserver.env[0].value=PROD
                         kubectl get all
